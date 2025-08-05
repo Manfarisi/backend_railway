@@ -14,7 +14,7 @@ const addFood = async (req, res) => {
       keterangan: req.body.keterangan,
       kategori: req.body.kategori,
       hpp: Number(req.body.hpp),
-      kodeProduk: req.body.idProduk, // manual input
+      kodeProduk: req.body.kodeProduk, // manual input
       image: image_filename,
     });
 
@@ -52,7 +52,7 @@ const removeFood = async (req, res) => {
 
 const editFood = async (req, res) => {
   try {
-    const { id, namaProduk, harga, hpp, keterangan, jumlah, kategori } =
+    const { id, namaProduk, harga, hpp, keterangan, jumlah, kategori, kodeProduk } =
       req.body;
     const food = await foodModel.findById(id);
     if (!food)
@@ -72,6 +72,7 @@ const editFood = async (req, res) => {
     food.jumlah = jumlah || food.jumlah;
     food.hpp = hpp || food.hpp;
     food.kategori = kategori || food.kategori;
+    food.kodeProduk = kodeProduk || food.kodeProduk;
     food.image = image_filename;
 
     await food.save();
