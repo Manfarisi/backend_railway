@@ -14,7 +14,7 @@ const addFood = async (req, res) => {
       keterangan: req.body.keterangan,
       kategori: req.body.kategori,
       hpp: Number(req.body.hpp),
-      idProduk: req.body.idProduk, // manual input
+      kodeProduk: req.body.idProduk, // manual input
       image: image_filename,
     });
 
