@@ -18,7 +18,6 @@ const foodSchema = new mongoose.Schema({
   },
   image: { type: String, required: true },
   hpp: { type: Number, required: true },
-  kodeAngka: { type: Number, required: true }, // required karena manual
   idProduk: { type: String, required: true }, // required karena manual
 });
 
