@@ -26,45 +26,30 @@ const foodSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-// Generate idProduk seperti PJ-AYM-001
-foodSchema.pre("save", function (next) {
-  if (!this.isModified("kodeAngka") && !this.isModified("namaProduk"))
-    return next();
-
-  const inisial = this.namaProduk
-    .replace(/\s+/g, "") // hapus spasi
-    .toUpperCase() // kapital semua
-    .slice(0, 3); // ambil 3 huruf pertama
-
-  const angka = String(this.kodeAngka).padStart(3, "0"); // 1 → 001
-
-  this.idProduk = `PJ-${inisial}-${angka}`;
-
-  next();
-});
-
 foodSchema.pre("save", async function (next) {
-  // Kalau baru, generate kodeAngka dan idProduk
   if (this.isNew) {
-    // 1️⃣ Ambil dan increment counter
+    // Auto-increment kodeAngka
     const counter = await counterModel.findByIdAndUpdate(
       { _id: "food_kodeAngka" },
       { $inc: { seq: 1 } },
       { new: true, upsert: true }
     );
     this.kodeAngka = counter.seq;
-
-    // 2️⃣ Buat inisial nama produk
-    const inisial = this.namaProduk
-      .replace(/\s+/g, "")
-      .toUpperCase()
-      .slice(0, 3);
-
-    const angka = String(this.kodeAngka).padStart(3, "0");
-    this.idProduk = `PJ-${inisial}-${angka}`;
   }
+
+  // Generate idProduk dari nama dan kodeAngka
+  const inisial = this.namaProduk
+    .replace(/\s+/g, "") // hapus spasi
+    .toUpperCase()       // kapital
+    .slice(0, 3);         // 3 huruf
+
+  const angka = String(this.kodeAngka).padStart(3, "0");
+
+  this.idProduk = `PJ-${inisial}-${angka}`;
+
   next();
 });
+
 
 const foodModel = mongoose.models.food || mongoose.model("food", foodSchema);
 export default foodModel;
