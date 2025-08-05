@@ -5,6 +5,8 @@ import fs from "fs";
 
 const addFood = async (req, res) => {
   const image_filename = `${req.file.filename}`;
+  const lastFood = await foodModel.findOne().sort({ kodeAngka: -1 });
+  const nextKodeAngka = lastFood ? lastFood.kodeAngka + 1 : 1001; // mulai dari 1001 jika kosong
 
   const food = new foodModel({
     namaProduk: req.body.namaProduk,
@@ -13,7 +15,8 @@ const addFood = async (req, res) => {
     keterangan: req.body.keterangan,
     kategori: req.body.kategori,
     hpp: req.body.hpp,
-    kodeAngka: Number(req.body.kodeAngka), 
+    idProduk: `PRD-${kodeAngka}`,
+    kodeAngka: Number(req.body.kodeAngka),
     image: image_filename,
   });
 
@@ -132,12 +135,10 @@ const kurangiStokFood = async (req, res) => {
 
     // Cek ketersediaan stok
     if (produk.jumlah < jumlah) {
-      return res
-        .status(400)
-        .json({
-          success: false,
-          message: `Stok tidak mencukupi. Tersisa ${produk.jumlah}`,
-        });
+      return res.status(400).json({
+        success: false,
+        message: `Stok tidak mencukupi. Tersisa ${produk.jumlah}`,
+      });
     }
 
     // Kurangi stok
