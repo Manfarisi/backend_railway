@@ -5,22 +5,24 @@ import fs from "fs";
 
 const addFood = async (req, res) => {
   const image_filename = `${req.file.filename}`;
-  const lastFood = await foodModel.findOne().sort({ kodeAngka: -1 });
-  const nextKodeAngka = lastFood ? lastFood.kodeAngka + 1 : 1001; // mulai dari 1001 jika kosong
-
-  const food = new foodModel({
-    namaProduk: req.body.namaProduk,
-    harga: Number(req.body.harga),
-    jumlah: Number(req.body.jumlah),
-    keterangan: req.body.keterangan,
-    kategori: req.body.kategori,
-    hpp: req.body.hpp,
-    idProduk: `PRD-${kodeAngka}`,
-    kodeAngka: Number(req.body.kodeAngka),
-    image: image_filename,
-  });
 
   try {
+    // Ambil data terakhir untuk auto-increment kodeAngka
+    const lastFood = await foodModel.findOne().sort({ kodeAngka: -1 });
+    const nextKodeAngka = lastFood ? lastFood.kodeAngka + 1 : 1;
+
+    const food = new foodModel({
+      namaProduk: req.body.namaProduk,
+      harga: Number(req.body.harga),
+      jumlah: Number(req.body.jumlah),
+      keterangan: req.body.keterangan,
+      kategori: req.body.kategori,
+      hpp: Number(req.body.hpp),
+      kodeAngka: nextKodeAngka,
+      idProduk: `PRD-${nextKodeAngka.toString().padStart(4, "0")}`,
+      image: image_filename,
+    });
+
     await food.save();
     res.json({ success: true, message: "Food Added" });
   } catch (error) {
@@ -28,6 +30,7 @@ const addFood = async (req, res) => {
     res.json({ success: false, message: "Error" });
   }
 };
+
 
 const listFood = async (req, res) => {
   try {

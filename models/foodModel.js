@@ -1,30 +1,16 @@
 import mongoose from "mongoose";
 
-const foodSchema = new mongoose.Schema(
-  {
-    namaProduk: { type: String, required: true },
-    keterangan: { type: String, required: true },
-    harga: { type: Number, required: true },
-    jumlah: { type: Number, required: true },
-    kategori: {
-      type: String,
-      required: true,
-      enum: [
-        "Hampers",
-        "Frozen",
-        "Paket Mini Frozen",
-        "Paket Matang",
-        "Hampers Neela Klappertart",
-      ],
-    },
-    image: { type: String, required: true },
-    hpp: { type: Number, required: true },
-
-    kodeAngka: { type: Number, unique: true },
-    idProduk: { type: String, required: true, unique: true }, // kode otomatis
-  },
-  { timestamps: true }
-);
+const foodSchema = new mongoose.Schema({
+  namaProduk: String,
+  harga: Number,
+  jumlah: Number,
+  keterangan: String,
+  kategori: String,
+  hpp: Number,
+  kodeAngka: Number, // ini untuk auto-increment
+  idProduk: String,  // ini untuk keperluan scan, cari, dsb
+  image: String,
+})
 
 foodSchema.pre("save", async function (next) {
   if (this.isNew) {
