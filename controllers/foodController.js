@@ -7,10 +7,6 @@ const addFood = async (req, res) => {
   const image_filename = `${req.file.filename}`;
 
   try {
-    // Ambil data terakhir untuk auto-increment kodeAngka
-    const lastFood = await foodModel.findOne().sort({ kodeAngka: -1 });
-    const nextKodeAngka = lastFood ? lastFood.kodeAngka + 1 : 1;
-
     const food = new foodModel({
       namaProduk: req.body.namaProduk,
       harga: Number(req.body.harga),
@@ -18,8 +14,8 @@ const addFood = async (req, res) => {
       keterangan: req.body.keterangan,
       kategori: req.body.kategori,
       hpp: Number(req.body.hpp),
-      kodeAngka: nextKodeAngka,
-      idProduk: `PRD-${nextKodeAngka.toString().padStart(4, "0")}`,
+      kodeAngka: Number(req.body.kodeAngka), // manual input
+      idProduk: req.body.idProduk, // manual input
       image: image_filename,
     });
 
