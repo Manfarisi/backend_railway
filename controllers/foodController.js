@@ -4,27 +4,26 @@ import fs from "fs";
 // === FOOD (Stok Utama) ===
 
 const addFood = async (req, res) => {
-  const image_filename = `${req.file.filename}`;
+  const { namaProduk, harga, kategori, kodeProduk } = req.body; // ✅ tambahkan kodeProduk
+  const image_filename = req.file.filename;
+
+  const newFood = new Food({
+    namaProduk,
+    harga,
+    kategori,
+    kodeProduk, // ✅ tambahkan di sini juga
+    image: image_filename,
+  });
 
   try {
-    const food = new foodModel({
-      namaProduk: req.body.namaProduk,
-      harga: Number(req.body.harga),
-      jumlah: Number(req.body.jumlah),
-      keterangan: req.body.keterangan,
-      kategori: req.body.kategori,
-      hpp: Number(req.body.hpp),
-      kodeProduk: req.body.kodeProduk, // manual input
-      image: image_filename,
-    });
-
-    await food.save();
-    res.json({ success: true, message: "Food Added" });
+    await newFood.save();
+    res.status(200).json({ success: true, message: "Produk berhasil ditambahkan" });
   } catch (error) {
-    console.log(error);
-    res.json({ success: false, message: "Error" });
+    console.error("Error saving food:", error);
+    res.status(500).json({ success: false, message: "Error" });
   }
 };
+
 
 
 const listFood = async (req, res) => {
