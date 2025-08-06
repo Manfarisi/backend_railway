@@ -1,5 +1,4 @@
 import checkoutModel from "../models/checkoutModel.js";
-import pemasukanModel from "../models/pemasukanModel.js";
 
 // ✅ Tambah data checkout + simpan ke pemasukan
 export const tambahCheckout = async (req, res) => {
@@ -70,7 +69,7 @@ export const hapusCheckout = async (req, res) => {
     }
 
     // Hapus juga pemasukan yang terkait
-    await pemasukanModel.deleteOne({ checkoutId: id });
+    await checkoutModel.deleteOne({ checkoutId: id });
 
     res.json({ success: true, message: "Checkout & pemasukan terkait berhasil dihapus" });
   } catch (error) {

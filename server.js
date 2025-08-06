@@ -5,11 +5,8 @@ import { connectDB } from './config/db.js'
 import foodRouter from './routes/foodRoute.js'
 import bahanBakuRouter from './routes/bahanBakuRoute.js'
 import pengeluaranRouter from './routes/PengeluaranRoute.js'
-import pemasukanRouter from './routes/pemasukanRouter.js'
-// import ProdukKeluarRouter from './routes/ProdukKeluar.js'
 import userRouter from './routes/userRoute.js'
 import checkoutRouter from './routes/checkoutRoute.js'
-import absenRouter from './routes/absenRoute.js'
 import pelangganRouter from './routes/pelangganRoute.js'
 
 // app config
@@ -49,14 +46,12 @@ app.use("/images",express.static('uploads'))
 app.use("/api/food",foodRouter)
 app.use("/api/user",userRouter)
 app.use("/api/checkout",checkoutRouter)
-app.use("/api/pegawai",absenRouter)
 app.use("/api/pelanggan",pelangganRouter)
 
 
 app.use("/api/bahanBaku",bahanBakuRouter)
 // app.use("/api/bahanKeluar",ProdukKeluarRouter)
 app.use("/api/pengeluaran",pengeluaranRouter)
-app.use("/api/pemasukan",pemasukanRouter)
 
 
 
