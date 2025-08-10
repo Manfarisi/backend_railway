@@ -18,7 +18,7 @@ const addFood = async (req, res) => {
         : "XXX";
 
       // Hitung jumlah produk yang sudah ada di kategori tersebut
-      const count = await foodModel.countDocuments({ kategori });
+      const count = await foodModel.countDocuments({ namaProduk });
 
       // Buat nomor urut 3 digit
       const nomorUrut = String(count + 1).padStart(3, "0");
