@@ -4,28 +4,53 @@ import fs from "fs";
 // === FOOD (Stok Utama) ===
 
 const addFood = async (req, res) => {
-  const { namaProduk, harga, kategori,jumlah, kodeProduk,keterangan,hpp } = req.body;
-  const image_filename = req.file.filename;
-
-  const food = new foodModel({
-    namaProduk,
-    harga,
-    kategori,
-    kodeProduk,
-    jumlah,
-    keterangan,
-    hpp,
-    image: image_filename,
-  });
-
   try {
+    const { namaProduk, harga, kategori, jumlah, kodeProduk, keterangan, hpp } = req.body;
+    const image_filename = req.file.filename;
+
+    let finalKodeProduk = kodeProduk;
+
+    // Kalau kodeProduk kosong, generate otomatis
+    if (!finalKodeProduk || finalKodeProduk.trim() === "") {
+      // Ambil prefix nama produk (3 huruf besar)
+      const namaProdukPrefix = namaProduk
+        ? namaProduk.substring(0, 3).toUpperCase()
+        : "XXX";
+
+      // Hitung jumlah produk yang sudah ada di kategori tersebut
+      const count = await foodModel.countDocuments({ kategori });
+
+      // Buat nomor urut 3 digit
+      const nomorUrut = String(count + 1).padStart(3, "0");
+
+      finalKodeProduk = `PJ-${namaProdukPrefix}-${nomorUrut}`;
+    }
+
+    const food = new foodModel({
+      namaProduk,
+      harga,
+      kategori,
+      kodeProduk: finalKodeProduk,
+      jumlah,
+      keterangan,
+      hpp,
+      image: image_filename,
+    });
+
     await food.save();
-    res.status(200).json({ success: true, message: "Produk berhasil ditambahkan" });
+
+    res.status(200).json({
+      success: true,
+      message: "Produk berhasil ditambahkan",
+      data: food,
+      kodeProduk: food.kodeProduk, // kirim kembali kodeProduk
+    });
   } catch (error) {
     console.error("Error saving food:", error);
     res.status(500).json({ success: false, message: "Error" });
   }
 };
+
 
 
 
