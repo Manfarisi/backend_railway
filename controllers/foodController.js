@@ -4,7 +4,7 @@ import fs from "fs";
 // === FOOD (Stok Utama) ===
 
 const addFood = async (req, res) => {
-  const { namaProduk, harga, kategori, kodeProduk,keterangan,hpp } = req.body;
+  const { namaProduk, harga, kategori,jumlah, kodeProduk,keterangan,hpp } = req.body;
   const image_filename = req.file.filename;
 
   const food = new foodModel({
@@ -12,6 +12,7 @@ const addFood = async (req, res) => {
     harga,
     kategori,
     kodeProduk,
+    jumlah,
     keterangan,
     hpp,
     image: image_filename,
