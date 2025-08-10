@@ -2,58 +2,40 @@ import foodModel from "../models/foodModel.js";
 import fs from "fs";
 
 // === FOOD (Stok Utama) ===
-
 const addFood = async (req, res) => {
   try {
-    const { namaProduk, harga, kategori, jumlah, kodeProduk, keterangan, hpp } = req.body;
-    const image_filename = req.file.filename;
+    const image_filename = req.file ? `${req.file.filename}` : null;
 
-    let finalKodeProduk = kodeProduk;
+    // Ambil kodeProduk dari FE kalau ada
+    let { kodeProduk, namaProduk, harga, jumlah, keterangan, kategori } = req.body;
 
-    // Kalau kodeProduk kosong, generate otomatis
-    if (!finalKodeProduk || finalKodeProduk.trim() === "") {
-      // Ambil prefix nama produk (3 huruf besar)
-      const namaProdukPrefix = namaProduk
-        ? namaProduk.substring(0, 3).toUpperCase()
-        : "XXX";
-
-      // Hitung jumlah produk yang sudah ada di kategori tersebut
-      const count = await foodModel.countDocuments({ namaProduk });
-
-      // Buat nomor urut 3 digit
-      const nomorUrut = String(count + 1).padStart(3, "0");
-
-      finalKodeProduk = `PJ-${namaProdukPrefix}-${nomorUrut}`;
+    // Kalau kodeProduk tidak dikirim dari FE → generate otomatis
+    if (!kodeProduk) {
+      const lastFood = await foodModel.findOne().sort({ _id: -1 });
+      const lastNumber = lastFood?.kodeProduk
+        ? parseInt(lastFood.kodeProduk.replace("PRD", ""), 10)
+        : 0;
+      kodeProduk = `PRD${String(lastNumber + 1).padStart(4, "0")}`;
     }
 
-    const food = new foodModel({
+    const newFood = new foodModel({
+      kodeProduk,
       namaProduk,
-      harga,
-      kategori,
-      kodeProduk: finalKodeProduk,
-      jumlah,
+      harga: Number(harga),
+      jumlah: Number(jumlah),
       keterangan,
-      hpp,
+      kategori,
       image: image_filename,
     });
 
-    await food.save();
-
-    res.status(200).json({
-      success: true,
-      message: "Produk berhasil ditambahkan",
-      data: food,
-      kodeProduk: food.kodeProduk, // kirim kembali kodeProduk
-    });
+    await newFood.save();
+    res.json({ success: true, message: "Produk berhasil ditambahkan", data: newFood });
   } catch (error) {
-    console.error("Error saving food:", error);
-    res.status(500).json({ success: false, message: "Error" });
+    res.status(500).json({ success: false, message: "Gagal menambahkan produk", error });
   }
 };
 
-
-
-
+export default addFood;
 
 const listFood = async (req, res) => {
   try {
