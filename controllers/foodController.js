@@ -4,25 +4,26 @@ import fs from "fs";
 // === FOOD (Stok Utama) ===
 
 const addFood = async (req, res) => {
-  const { namaProduk, harga, kategori, kodeProduk } = req.body; // ✅ tambahkan kodeProduk
+  const { namaProduk, harga, kategori, kodeProduk } = req.body;
   const image_filename = req.file.filename;
 
-  const newFood = newFood({
+  const food = new foodModel({
     namaProduk,
     harga,
     kategori,
-    kodeProduk, // ✅ tambahkan di sini juga
+    kodeProduk,
     image: image_filename,
   });
 
   try {
-    await newFood.save();
+    await food.save();
     res.status(200).json({ success: true, message: "Produk berhasil ditambahkan" });
   } catch (error) {
     console.error("Error saving food:", error);
     res.status(500).json({ success: false, message: "Error" });
   }
 };
+
 
 
 
