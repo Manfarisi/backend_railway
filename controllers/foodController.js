@@ -7,7 +7,7 @@ const addFood = async (req, res) => {
   const { namaProduk, harga, kategori, kodeProduk } = req.body; // ✅ tambahkan kodeProduk
   const image_filename = req.file.filename;
 
-  const newFood = new Food({
+  const newFood = newFood({
     namaProduk,
     harga,
     kategori,
