@@ -6,34 +6,47 @@ const addFood = async (req, res) => {
   try {
     const image_filename = req.file ? `${req.file.filename}` : null;
 
-    // Ambil kodeProduk dari FE kalau ada
-    let { kodeProduk, namaProduk, harga, jumlah, keterangan, kategori } = req.body;
+    // Ambil data dari request body
+    const { kodeProduk, namaProduk, harga, jumlah, keterangan, kategori, hpp } = req.body;
 
-    // Kalau kodeProduk tidak dikirim dari FE → generate otomatis
-    if (!kodeProduk) {
-      const lastFood = await foodModel.findOne().sort({ _id: -1 });
-      const lastNumber = lastFood?.kodeProduk
-        ? parseInt(lastFood.kodeProduk.replace("PRD", ""), 10)
-        : 0;
-      kodeProduk = `PRD${String(lastNumber + 1).padStart(4, "0")}`;
-    }
+    // Generate kodeProduk jika tidak ada dari frontend
+    const generatedKodeProduk = kodeProduk || await generateProductCode();
 
     const newFood = new foodModel({
-      kodeProduk,
+      kodeProduk: generatedKodeProduk,
       namaProduk,
       harga: Number(harga),
       jumlah: Number(jumlah),
       keterangan,
       kategori,
+      hpp: Number(hpp),
       image: image_filename,
     });
 
     await newFood.save();
-    res.json({ success: true, message: "Produk berhasil ditambahkan", data: newFood });
+    
+    res.json({ 
+      success: true, 
+      message: "Produk berhasil ditambahkan", 
+      data: newFood 
+    });
   } catch (error) {
-    res.status(500).json({ success: false, message: "Gagal menambahkan produk", error });
+    res.status(500).json({ 
+      success: false, 
+      message: "Gagal menambahkan produk", 
+      error: error.message 
+    });
   }
 };
+
+// Fungsi untuk generate kode produk
+async function generateProductCode() {
+  const lastFood = await foodModel.findOne().sort({ _id: -1 });
+  const lastNumber = lastFood?.kodeProduk
+    ? parseInt(lastFood.kodeProduk.replace("PRD", ""), 10)
+    : 0;
+  return `PRD${String(lastNumber + 1).padStart(4, "0")}`;
+}
 
 export default addFood;
 
