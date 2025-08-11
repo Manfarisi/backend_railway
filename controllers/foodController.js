@@ -5,15 +5,17 @@ import fs from "fs";
 const addFood = async (req, res) => {
   try {
     const image_filename = req.file ? `${req.file.filename}` : null;
+    const { namaProduk, harga, jumlah, keterangan, kategori, hpp } = req.body;
 
-    // Ambil data dari request body
-    const { kodeProduk, namaProduk, harga, jumlah, keterangan, kategori, hpp } = req.body;
-
-    // Generate kodeProduk jika tidak ada dari frontend
-    const generatedKodeProduk = kodeProduk || await generateProductCode();
+    // Generate kode produk otomatis
+    const lastFood = await foodModel.findOne().sort({ _id: -1 });
+    const lastNumber = lastFood?.kodeProduk
+      ? parseInt(lastFood.kodeProduk.replace("PRD", ""), 10)
+      : 0;
+    const kodeProduk = `PRD${String(lastNumber + 1).padStart(4, "0")}`;
 
     const newFood = new foodModel({
-      kodeProduk: generatedKodeProduk,
+      kodeProduk,
       namaProduk,
       harga: Number(harga),
       jumlah: Number(jumlah),
@@ -28,13 +30,12 @@ const addFood = async (req, res) => {
     res.json({ 
       success: true, 
       message: "Produk berhasil ditambahkan", 
-      data: newFood 
+      data: newFood // Pastikan ini termasuk kodeProduk
     });
   } catch (error) {
     res.status(500).json({ 
       success: false, 
-      message: "Gagal menambahkan produk", 
-      error: error.message 
+      message: error.message || "Gagal menambahkan produk"
     });
   }
 };
