@@ -5,14 +5,23 @@ import fs from "fs";
 const addFood = async (req, res) => {
   try {
     const image_filename = req.file ? `${req.file.filename}` : null;
+    
+    // Ekstrak data dari FormData
     const { namaProduk, harga, jumlah, keterangan, kategori, hpp } = req.body;
 
-    // Generate kode produk otomatis
-    const lastFood = await foodModel.findOne().sort({ _id: -1 });
-    const lastNumber = lastFood?.kodeProduk 
-      ? parseInt(lastFood.kodeProduk.replace("PRD", ""), 10)
-      : 0;
-    const kodeProduk = `PRD${String(lastNumber + 1).padStart(4, "0")}`;
+    // Validasi data yang diperlukan
+    if (!namaProduk || !kategori) {
+      return res.status(400).json({
+        success: false,
+        message: "Nama produk dan kategori harus diisi"
+      });
+    }
+
+    // Generate kode produk
+    const prefix = "PJ";
+    const singkatan = namaProduk.substring(0, 3).toUpperCase();
+    const randomNum = Math.floor(Math.random() * 1000).toString().padStart(3, "0");
+    const kodeProduk = `${prefix}-${singkatan}-${randomNum}`;
 
     const newFood = new foodModel({
       kodeProduk,
@@ -30,12 +39,7 @@ const addFood = async (req, res) => {
     res.json({ 
       success: true, 
       message: "Produk berhasil ditambahkan",
-      data: {
-        kodeProduk: newFood.kodeProduk,
-        namaProduk: newFood.namaProduk,
-        kategori: newFood.kategori,
-        // tambahkan field lain yang diperlukan
-      }
+      data: newFood // Kirim seluruh data produk termasuk kodeProduk
     });
   } catch (error) {
     res.status(500).json({ 
@@ -44,16 +48,6 @@ const addFood = async (req, res) => {
     });
   }
 };
-// Fungsi untuk generate kode produk
-async function generateProductCode() {
-  const lastFood = await foodModel.findOne().sort({ _id: -1 });
-  const lastNumber = lastFood?.kodeProduk
-    ? parseInt(lastFood.kodeProduk.replace("PRD", ""), 10)
-    : 0;
-  return `PRD${String(lastNumber + 1).padStart(4, "0")}`;
-}
-
-export default addFood;
 
 const listFood = async (req, res) => {
   try {
