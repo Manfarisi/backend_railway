@@ -4,47 +4,37 @@ import fs from "fs";
 // === FOOD (Stok Utama) ===
 const addFood = async (req, res) => {
   try {
-    const image_filename = req.file ? `${req.file.filename}` : null;
+    const { kodeProduk, namaProduk, harga, jumlah, keterangan, kategori, hpp } = req.body;
     
-    // Ekstrak data dari FormData
-    const { namaProduk, harga, jumlah, keterangan, kategori, hpp } = req.body;
-
-    // Validasi data yang diperlukan
-    if (!namaProduk || !kategori) {
+    if (!kodeProduk) {
       return res.status(400).json({
         success: false,
-        message: "Nama produk dan kategori harus diisi"
+        message: "Kode produk harus diisi"
       });
     }
 
-    // Generate kode produk
-    const prefix = "PJ";
-    const singkatan = namaProduk.substring(0, 3).toUpperCase();
-    const randomNum = Math.floor(Math.random() * 1000).toString().padStart(3, "0");
-    const kodeProduk = `${prefix}-${singkatan}-${randomNum}`;
-
     const newFood = new foodModel({
-      kodeProduk,
+      kodeProduk, // Gunakan kode dari input user
       namaProduk,
       harga: Number(harga),
       jumlah: Number(jumlah),
       keterangan,
       kategori,
       hpp: Number(hpp),
-      image: image_filename,
+      image: req.file?.filename
     });
 
     await newFood.save();
     
     res.json({ 
-      success: true, 
+      success: true,
       message: "Produk berhasil ditambahkan",
-      data: newFood // Kirim seluruh data produk termasuk kodeProduk
+      data: newFood
     });
   } catch (error) {
-    res.status(500).json({ 
-      success: false, 
-      message: error.message 
+    res.status(500).json({
+      success: false,
+      message: error.message
     });
   }
 };
