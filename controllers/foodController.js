@@ -9,7 +9,7 @@ const addFood = async (req, res) => {
 
     // Generate kode produk otomatis
     const lastFood = await foodModel.findOne().sort({ _id: -1 });
-    const lastNumber = lastFood?.kodeProduk
+    const lastNumber = lastFood?.kodeProduk 
       ? parseInt(lastFood.kodeProduk.replace("PRD", ""), 10)
       : 0;
     const kodeProduk = `PRD${String(lastNumber + 1).padStart(4, "0")}`;
@@ -29,17 +29,21 @@ const addFood = async (req, res) => {
     
     res.json({ 
       success: true, 
-      message: "Produk berhasil ditambahkan", 
-      data: newFood // Pastikan ini termasuk kodeProduk
+      message: "Produk berhasil ditambahkan",
+      data: {
+        kodeProduk: newFood.kodeProduk,
+        namaProduk: newFood.namaProduk,
+        kategori: newFood.kategori,
+        // tambahkan field lain yang diperlukan
+      }
     });
   } catch (error) {
     res.status(500).json({ 
       success: false, 
-      message: error.message || "Gagal menambahkan produk"
+      message: error.message 
     });
   }
 };
-
 // Fungsi untuk generate kode produk
 async function generateProductCode() {
   const lastFood = await foodModel.findOne().sort({ _id: -1 });
