@@ -16,7 +16,25 @@ const storage = multer.diskStorage({
 
     const upload = multer({storage:storage})
 
-foodRouter.post("/add",upload.single("image"),addFood)
+foodRouter.post('/add', upload.single('image'), async (req, res) => {
+  try {
+    // Debugging - Lihat semua data yang masuk
+    console.log("Body:", req.body);
+    console.log("File:", req.file);
+
+    const { kodeProduk } = req.body; // Pastikan ini terbaca
+    
+    if (!kodeProduk) {
+      return res.status(400).json({
+        success: false,
+        message: "Kode produk kosong di backend"
+      });
+    }
+    // ... lanjutkan proses
+  } catch (error) {
+    console.error("Error detail:", error);
+  }
+});
 foodRouter.get("/list",listFood)
 foodRouter.get("/detail/:id",getFoodById)
 foodRouter.post("/remove",removeFood)
