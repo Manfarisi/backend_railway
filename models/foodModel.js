@@ -18,7 +18,7 @@ const foodSchema = new mongoose.Schema({
   },
   image: { type: String, required: true },
   hpp: { type: Number, required: true },
-  kodeProduk: { type: String, required: true }, // required karena manual
+  kodeProduk: { type: String, required: true, unique: true }, // required karena manual
 });
 
 const foodModel = mongoose.models.food || mongoose.model("food", foodSchema);
