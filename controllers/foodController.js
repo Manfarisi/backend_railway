@@ -4,37 +4,38 @@ import fs from "fs";
 // === FOOD (Stok Utama) ===
 const addFood = async (req, res) => {
   try {
-    const { kodeProduk, namaProduk, harga, jumlah, keterangan, kategori, hpp } = req.body;
-    
+    const { kodeProduk, namaProduk, harga, jumlah, keterangan, kategori, hpp } =
+      req.body;
+
     if (!kodeProduk) {
       return res.status(400).json({
         success: false,
-        message: "Kode produk harus diisi"
+        message: "Kode produk harus diisi",
       });
     }
 
     const newFood = new foodModel({
       kodeProduk, // Gunakan kode dari input user
       namaProduk,
-      harga,
-      jumlah,
+      harga: Number(req.body.harga),
+      jumlah: Number(req.body.jumlah),
       keterangan,
       kategori,
       hpp,
-      image: req.file?.filename
+      image: req.file?.filename,
     });
 
     await newFood.save();
-    
-    res.json({ 
+
+    res.json({
       success: true,
       message: "Produk berhasil ditambahkan",
-      data: newFood
+      data: newFood,
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: error.message
+      message: error.message,
     });
   }
 };
@@ -64,8 +65,16 @@ const removeFood = async (req, res) => {
 
 const editFood = async (req, res) => {
   try {
-    const { id, namaProduk, harga, hpp, keterangan, jumlah, kategori, kodeProduk } =
-      req.body;
+    const {
+      id,
+      namaProduk,
+      harga,
+      hpp,
+      keterangan,
+      jumlah,
+      kategori,
+      kodeProduk,
+    } = req.body;
     const food = await foodModel.findById(id);
     if (!food)
       return res
