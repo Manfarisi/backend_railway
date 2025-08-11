@@ -15,13 +15,13 @@ const addFood = async (req, res) => {
     }
 
     const newFood = new foodModel({
-      kodeProduk, // Gunakan kode dari input user
-      namaProduk,
+      namaProduk: req.body.namaProduk,
+      kodeProduk: req.body.kodeProduk,
       harga: Number(req.body.harga),
       jumlah: Number(req.body.jumlah),
-      keterangan,
-      kategori,
-      hpp,
+      keterangan: req.body.keterangan,
+      kategori: req.body.kategori,
+      hpp: req.body.hpp,
       image: req.file?.filename,
     });
 
